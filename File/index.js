@@ -10,8 +10,8 @@ if(fs.existsSync(DB_FILE)) {
   stats = JSON.parse(fs.readFileSync(DB_FILE));
 }
 
-// Initialize bot
-const bot = new TelegramBot('YOUR_BOT_TOKEN', {polling: true});
+// Initialize bot with your actual token
+const bot = new TelegramBot('8094239794:AAEgyOp2SJCJ2kOFAWWvXm06oopLvqBFQig', { polling: true });
 
 // Message counter
 bot.on('message', (msg) => {
