@@ -1,12 +1,14 @@
+
+
 {
   "name": "telegram-bot",
   "version": "1.0.0",
-  "description": "Telegram message stats bot",
+  "description": "A Telegram Bot to track message stats",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.61.0"
+    "node-telegram-bot-api": "^0.51.0"
   }
 }
