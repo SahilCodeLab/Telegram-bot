@@ -1,22 +1,20 @@
 {
-  "name": "chat-reply-api",
+  "name": "your-project",
   "version": "1.0.0",
-  "description": "A Node.js app for replying to messages using Giminin API",
-  "main": "index.js",  // This is the main file (or server.js, depending on your choice)
+  "main": "index.js",
   "scripts": {
-    "start": "node index.js",  // Command to run the server
-    "dev": "nodemon index.js"  // For development mode, use nodemon to auto-reload
+    "start": "node index.js"
   },
   "dependencies": {
-    "axios": "^0.27.2",  // HTTP client for API calls
-    "body-parser": "^1.19.0",  // Parse incoming request bodies
-    "express": "^4.18.1",  // Web framework for handling requests
-    "cors": "^2.8.5",  // Cross-Origin Resource Sharing middleware
-    "dotenv": "^16.0.0"  // To manage environment variables
+    "express": "^4.17.1",
+    "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
+    "body-parser": "^1.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   },
   "engines": {
-    "node": ">=14.0.0"  // Optional: specify Node.js version for Heroku
-  },
-  "author": "Sahil",
-  "license": "MIT"
+    "node": "14.x"
+  }
 }
