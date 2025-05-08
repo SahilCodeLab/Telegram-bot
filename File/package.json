@@ -1,14 +1,22 @@
-
-
 {
-  "name": "telegram-bot",
+  "name": "chat-reply-api",
   "version": "1.0.0",
-  "description": "A Telegram Bot to track message stats",
-  "main": "index.js",
+  "description": "A Node.js app for replying to messages using Giminin API",
+  "main": "index.js",  // This is the main file (or server.js, depending on your choice)
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",  // Command to run the server
+    "dev": "nodemon index.js"  // For development mode, use nodemon to auto-reload
   },
   "dependencies": {
-    "node-telegram-bot-api": "^0.51.0"
-  }
+    "axios": "^0.27.2",  // HTTP client for API calls
+    "body-parser": "^1.19.0",  // Parse incoming request bodies
+    "express": "^4.18.1",  // Web framework for handling requests
+    "cors": "^2.8.5",  // Cross-Origin Resource Sharing middleware
+    "dotenv": "^16.0.0"  // To manage environment variables
+  },
+  "engines": {
+    "node": ">=14.0.0"  // Optional: specify Node.js version for Heroku
+  },
+  "author": "Sahil",
+  "license": "MIT"
 }
