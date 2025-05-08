@@ -16,20 +16,28 @@ app.use(express.static('public'));  // Serve static files from 'public' folder
 app.post('/reply', async (req, res) => {
     try {
         const userMessage = req.body.message;
-        const response = await axios.post('https://api.giminin.com/reply', {
-            message: userMessage
-        }, {
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            }
-        });
 
-        // Send back the reply from the Giminin API
-        res.json({ reply: response.data.reply });
+        if (!userMessage) {
+            return res.status(400).json({ error: 'Message is required' });
+        }
+
+        // Use Hugging Face API for generating a response
+        const response = await axios.post(
+            'https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', 
+            { inputs: userMessage },
+            {
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,  // Use the Hugging Face token here
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+
+        // Send back the reply from the Hugging Face API
+        res.json({ reply: response.data.generated_text || "Sorry, no reply generated." });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Failed to get response' });
+        res.status(500).json({ error: 'Failed to get response from the API' });
     }
 });
 
