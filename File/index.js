@@ -1,109 +1,39 @@
-const TelegramBot = require('node-telegram-bot-api');
-const fs = require('fs');
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
+const axios = require('axios');
+const cors = require('cors');
 
-// Database setup (local JSON file)
-const DB_FILE = 'messageStats.json';
-let stats = {};
+const app = express();
+const port = process.env.PORT || 3000;  // Default to 3000 if not provided by the environment
+const apiKey = process.env.API_KEY;  // Use the API key from environment variables
 
-// Load database
-if(fs.existsSync(DB_FILE)) {
-  stats = JSON.parse(fs.readFileSync(DB_FILE));
-}
+app.use(cors());  // Enable CORS for frontend communication
+app.use(bodyParser.json());
+app.use(express.static('public'));  // Serve static files from 'public' folder
 
-// Initialize bot with your actual token
-const bot = new TelegramBot('8094239794:AAEgyOp2SJCJ2kOFAWWvXm06oopLvqBFQig', { polling: true });
+// Route to handle the message reply
+app.post('/reply', async (req, res) => {
+    try {
+        const userMessage = req.body.message;
+        const response = await axios.post('https://api.giminin.com/reply', {
+            message: userMessage
+        }, {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-// Message counter
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-  const userId = msg.from.id;
-  const userName = msg.from.first_name;
-
-  // Create database entry
-  if(!stats[chatId]) stats[chatId] = {};
-  if(!stats[chatId][userId]) {
-    stats[chatId][userId] = {
-      count: 0,
-      name: userName,
-      lastMessage: ''
-    };
-  }
-
-  // Update stats
-  stats[chatId][userId].count++;
-  stats[chatId][userId].lastMessage = new Date().toLocaleString();
-  
-  // Auto-save every 10 messages
-  if(stats[chatId][userId].count % 10 === 0) {
-    saveStats();
-  }
+        // Send back the reply from the Giminin API
+        res.json({ reply: response.data.reply });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to get response' });
+    }
 });
 
-// Top user stats
-bot.onText(/\/stats/, (msg) => {
-  const chatId = msg.chat.id;
-  const chatStats = stats[chatId] || {};
-  
-  // Top 5 users
-  const topUsers = Object.entries(chatStats)
-    .sort((a, b) => b[1].count - a[1].count)
-    .slice(0, 5)
-    .map(([id, data], index) => 
-      `${index+1}. ${data.name} - ${data.count} messages`);
-
-  // Total calculation
-  const totalMessages = Object.values(chatStats).reduce((sum, user) => sum + user.count, 0);
-
-  const response = `📊 Group Stats:\n\n${topUsers.join('\n')}\n\nTotal Messages: ${totalMessages}`;
-  bot.sendMessage(chatId, response);
+// Start the server
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
-
-// Personal stats
-bot.onText(/\/mystats/, (msg) => {
-  const chatId = msg.chat.id;
-  const userId = msg.from.id;
-  
-  const userData = stats[chatId]?.[userId];
-  if(!userData) return;
-
-  // Rank calculation
-  const allUsers = Object.entries(stats[chatId]);
-  const sortedUsers = allUsers.sort((a, b) => b[1].count - a[1].count);
-  const userRank = sortedUsers.findIndex(u => u[0] == userId) + 1;
-
-  const response = `👤 Your Stats:\n\nMessages: ${userData.count}\nRank: #${userRank}\nLast Message: ${userData.lastMessage}`;
-  bot.sendMessage(chatId, response);
-});
-
-// Data reset (Admin only)
-bot.onText(/\/clearstats/, async (msg) => {
-  const chatId = msg.chat.id;
-  const admins = await bot.getChatAdministrators(chatId);
-  
-  if(admins.some(a => a.user.id === msg.from.id)) {
-    delete stats[chatId];
-    saveStats();
-    bot.sendMessage(chatId, 'Stats have been reset!');
-  } else {
-    bot.sendMessage(chatId, 'You dont have permission!');
-  }
-});
-
-// Help command
-bot.onText(/\/help/, (msg) => {
-  const helpText = `
-  📈 Stats Bot Commands:
-
-  1. /stats - Top 5 active users
-  2. /mystats - Your personal stats
-  3. /clearstats - Reset data (Admins only)
-  `;
-  bot.sendMessage(msg.chat.id, helpText);
-});
-
-// Save data function
-function saveStats() {
-  fs.writeFileSync(DB_FILE, JSON.stringify(stats, null, 2));
-}
-
-console.log('🚀 Stats Tracker Bot Active!');
