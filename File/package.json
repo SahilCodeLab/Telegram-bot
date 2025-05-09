@@ -1,14 +1,15 @@
 {
   "name": "telegram-stats-bot",
   "version": "1.0.0",
-  "description": "A Telegram bot that tracks message stats",
+  "description": "Telegram bot to track group message stats, user activity, and more",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Sahil (sahilcodab)",
-  "license": "MIT",
   "dependencies": {
-    "node-telegram-bot-api": "^0.61.0"
-  }
+    "node-telegram-bot-api": "^0.56.0",
+    "fs": "^0.0.1-security"
+  },
+  "author": "Sahil",
+  "license": "MIT"
 }
