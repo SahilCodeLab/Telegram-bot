@@ -11,7 +11,7 @@ if(fs.existsSync(DB_FILE)) {
 }
 
 // Initialize bot
-const bot = new TelegramBot('YOUR_BOT_TOKEN', {polling: true});
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 // Message counter
 bot.on('message', (msg) => {
